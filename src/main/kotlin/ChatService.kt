@@ -7,4 +7,3 @@ object ChatService {
 
 }
 
-    fun isUser(userId: Int) = users.filter {}
