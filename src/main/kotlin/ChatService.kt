@@ -10,7 +10,7 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun deleteUser(user: User, userId: Int): Boolean {
-        if (isUserDeleted(userId)) {
+        if (users.isUserDeleted(userId)) {
             users[userId - 1] = user.copy(idUser = userId, isDeleted = true)
             return true
         }
@@ -18,8 +18,8 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun createChatFirstMessage(message: Message, chat: Chat, idUser: Int): Message {
-        if (isUserInUsers(idUser)) {
-            if (!isUserInChats(idUser)) {
+        if (users.isUserInUsers(idUser)) {
+            if (!chats.isUserInChats(idUser)) {
                 val newChat = chat.copy(idChat = chats.size + 1, userId = idUser)
                 chats.plusAssign(newChat)
                 val firstMessage = message.copy(idMessage = messages.size + 1, chatId = chats.size, userId = idUser)
@@ -32,11 +32,11 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun deleteChat(chat: Chat, chatId: Int, idUser: Int): Boolean {
-        if (isUserInUsers(idUser)) {
-            if (isUserChatDeleted(idUser, chatId)) {
+        if (users.isUserInUsers(idUser)) {
+            if (chats.isUserChatDeleted(idUser, chatId)) {
                 chats[chatId - 1] = chat.copy(idChat = chatId, userId = idUser, isDeleted = true)
-                if (isMessageInChats(chatId)) {
-                    filteredMessagesForDelete_1(chatId)
+                if (messages.isMessageInChats(chatId)) {
+                    messages.filteredMessagesForDelete1(chatId)
                 }
                 return true
             }
@@ -46,8 +46,8 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun createNewMessage(message: Message, idUser: Int, chatId: Int): Message {
-        if (isUserInUsers(idUser)) {
-            if (isUserChatDeleted(idUser, chatId)) {
+        if (users.isUserInUsers(idUser)) {
+            if (chats.isUserChatDeleted(idUser, chatId)) {
                 val newMessage = message.copy(idMessage = messages.size + 1, chatId = chatId, userId = idUser)
                 messages.plusAssign(newMessage)
                 return messages.last()
@@ -58,8 +58,8 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun deleteMessage(chat: Chat, message: Message, idMessage: Int, idUser: Int, chatId: Int): Boolean {
-        if (filteredMessagesForDelete_2(idUser, chatId, idMessage)) {
-            if (countNonDeletedMessagesInChat(chatId) == 1) {
+        if (messages.filteredMessagesForDelete2(idUser, chatId, idMessage)) {
+            if (messages.countNonDeletedMessagesInChat(chatId) == 1) {
                 chats[chatId - 1] = chat.copy(idChat = chatId, userId = idUser, isDeleted = true)
                 messages[chatId - 1] = message.copy(isDeletedMessage = true)
             } else {
@@ -71,7 +71,7 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun editMessage(message: Message, idMessage: Int, idUser: Int, chatId: Int): Boolean {
-        if (filteredMessagesForDelete_2(idUser, chatId, idMessage)) {
+        if (messages.filteredMessagesForDelete2(idUser, chatId, idMessage)) {
                 val newMessage = message.copy(text = message.text)
                 messages.plusAssign(newMessage)
                 return true
@@ -82,7 +82,7 @@ object ChatService : ChatInterface<Chat, Message, User>{
     override fun receiveUnreadMessagesInChat() {
         for (chat in chats) {
             if (!chat.isDeleted) {
-                if (!listUnreadLastMessages()) {
+                if (!messages.listUnreadLastMessages()) {
                     println("В чате с id - ${chat.idChat} отсутствуют непрочитанные сообщения!")
                 }
                 println("В чате с id - ${chat.idChat} есть непрочитанные сообщения!")
@@ -91,11 +91,11 @@ object ChatService : ChatInterface<Chat, Message, User>{
     }
 
     override fun receiveAllMessagesInChat(chatId: Int) {
-        val countMessages = countAllMessagesInChat(chatId)
+        val countMessages = messages.countAllMessagesInChat(chatId)
         println("Всего сообщений в чате: $countMessages.")
-        doAllMessagesInChatRead(chatId)
-        printAllMessagesInChat(chatId)
-        println("Последнее messageID: ${maxIdMessageInChat(chatId)}")
+        messages.doAllMessagesInChatRead(chatId)
+        messages.printAllMessagesInChat(chatId)
+        println("Последнее messageID: ${messages.maxIdMessageInChat(chatId)}")
     }
 
 
