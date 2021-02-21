@@ -1,16 +1,16 @@
 data class Chat(
-        val idChat: Int,
+        var idChat: Int,
         val nameOwn: String = "Nik",
-        val userId: Int,
+        var userId: Int,
         var isDeletedUser: Boolean = false,
         var isDeleted: Boolean = false
 )
 
 data class User(
-    val idUser: Int = 0,
-    val name: String = "noName",
-    val sirName: String = "noSirName",
-    val isDeleted: Boolean = false
+        var idUser: Int = 0,
+        val name: String = "noName",
+        val sirName: String = "noSirName",
+        var isDeleted: Boolean = false
 ) {
     override fun toString(): String {
         return """|  
@@ -21,9 +21,9 @@ data class User(
 }
 
 data class Message(
-        val chatId: Int,
-        val userId: Int,
-        val idMessage: Int,
+        var chatId: Int,
+        var userId: Int,
+        var idMessage: Int,
         val text: String?,
         var isRead: Boolean = false,
         var isDeletedMessage: Boolean = false
