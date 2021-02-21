@@ -17,17 +17,15 @@ object ChatService : ChatInterface<Chat, Message, User>{
         throw UserWasDeletedException("Пользователь был уже удален или его не существует!")
     }
 
-    override fun createChatFirstMessage(message: Message, chat: Chat, idUser: Int): Message {
-        if (users.isUserInUsers(idUser)) {
-            if (!chats.isUserInChats(idUser)) {
-                val newChat = chat.copy(idChat = chats.size + 1, userId = idUser)
+    override fun addChat(chat: Chat, userId: Int): Boolean {
+        if (users.isUserInUsers(userId)) {
+            if (!chats.isUserInChats(userId)) {
+                val newChat = chat.copy(idChat = chats.size + 1, userId = userId)
                 chats.plusAssign(newChat)
-                val firstMessage = message.copy(idMessage = messages.size + 1, chatId = chats.size, userId = idUser)
-                messages.plusAssign(firstMessage)
-                return messages.last()
+                return true
             }
             throw ChatFoundException("Чат с данным пользователем уже существует. Вы не можете создать второй чат!")
-        }
+       }
         throw UserNotFoundException("Пользователь не найден!")
     }
 
@@ -45,37 +43,33 @@ object ChatService : ChatInterface<Chat, Message, User>{
         throw UserNotFoundException("Пользователь не найден! Добавьте пользователя в свои контакты!")
     }
 
-    override fun createNewMessage(message: Message, idUser: Int, chatId: Int): Message {
+    override fun createMessage(message: Message, idUser: Int, chatId: Int): Message {
         if (users.isUserInUsers(idUser)) {
             if (chats.isUserChatDeleted(idUser, chatId)) {
                 val newMessage = message.copy(idMessage = messages.size + 1, chatId = chatId, userId = idUser)
                 messages.plusAssign(newMessage)
                 return messages.last()
             }
-            throw ChatUserIncorrectedException("Данный чат и пользователь не совместимы!")
+            throw ChatUserIncorrectedException("Вы не можете отправить сообщение пользователю. Создайте сначала чат!")
         }
         throw UserNotFoundException("Пользователь не найден! Добавьте пользователя в свои контакты!")
     }
 
     override fun deleteMessage(chat: Chat, message: Message, idMessage: Int, idUser: Int, chatId: Int): Boolean {
         if (messages.filteredMessagesForDelete2(idUser, chatId, idMessage)) {
-            if (messages.countNonDeletedMessagesInChat(chatId) == 1) {
-                chats[chatId - 1] = chat.copy(idChat = chatId, userId = idUser, isDeleted = true)
-                messages[chatId - 1] = message.copy(isDeletedMessage = true)
-            } else {
-                messages[chatId - 1] = message.copy(isDeletedMessage = true)
-            }
+            messages[idMessage - 1] = message.copy(isDeletedMessage = true)
             return true
         }
         throw MessageNotFind("Сообщение не найдено!")
     }
 
-    override fun editMessage(message: Message, idMessage: Int, idUser: Int, chatId: Int): Boolean {
-        if (messages.filteredMessagesForDelete2(idUser, chatId, idMessage)) {
-                val newMessage = message.copy(text = message.text)
-                messages.plusAssign(newMessage)
+    override fun editMessage(newMessage: Message, idMessage: Int): Boolean {
+        if (messages.isMessageNotDeleted(idMessage)) {
+            for ((index, message) in messages.withIndex()) {
+                messages[index] = message.copy(idMessage = newMessage.idMessage, text = newMessage.text)
                 return true
             }
+        }
         throw MessageNotFind("Сообщение не найдено!")
     }
 
@@ -97,31 +91,25 @@ object ChatService : ChatInterface<Chat, Message, User>{
         messages.printAllMessagesInChat(chatId)
         println("Последнее messageID: ${messages.maxIdMessageInChat(chatId)}")
     }
-
-
-
-
 }
 
 class ChatFoundException(message: String) : RuntimeException("Чат с данным пользователем уже существует. Вы не можете создать второй чат!")
 class UserNotFoundException(message: String) : RuntimeException("Пользователь не найден!")
 class UserWasDeletedException(message: String) : RuntimeException("Пользователь был уже удален или его не существует!")
-class ChatUserIncorrectedException(message: String) : RuntimeException("Данный чат и пользователь не совместимы!")
+class ChatUserIncorrectedException(message: String) : RuntimeException("Вы не можете отправить сообщение пользователю. Создайте сначала чат!")
 class MessageNotFind(message: String) : RuntimeException("Сообщение не найдено!")
+class ChatIs(message: String) : RuntimeException("Чат уже существует с другим пользователем")
 
-class ChatNotFoundException(message: String) : RuntimeException("Вы не можете отправить сообщение! Создайте сначала чат!")
-class ChatWasDeletedException(message: String) : RuntimeException("Чат был удален! Вы не можете удалить его дважды!")
-class UserIsNotInChat(message: String) : RuntimeException("Пользователь в данном чате не общается!")
-
-
-//    fun createChat(chat: Chat, idUser: Int): Chat {
-//        if (isUserInUsers(idUser)) {
-//            if (!isUserInChats(idUser)) {
+//    override fun createChatFirstMessage(message: Message, chat: Chat, idUser: Int): Message {
+//        if (users.isUserInUsers(idUser)) {
+//            if (!chats.isUserInChats(idUser)) {
 //                val newChat = chat.copy(idChat = chats.size + 1, userId = idUser)
 //                chats.plusAssign(newChat)
-//                return chats.last()
+//                val firstMessage = message.copy(idMessage = messages.size + 1, chatId = chats.size, userId = idUser)
+//                messages.plusAssign(firstMessage)
+//                return messages.last()
 //            }
 //            throw ChatFoundException("Чат с данным пользователем уже существует. Вы не можете создать второй чат!")
 //        }
-//        throw UserNotFoundException("Пользователь не найден! Добавьте пользователя в свои контакты!")
+//        throw UserNotFoundException("Пользователь не найден!")
 //    }
