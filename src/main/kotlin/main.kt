@@ -1,6 +1,8 @@
 import ChatService.addChat
 import ChatService.addUser
 import ChatService.chats
+import ChatService.receiveUnreadMessagesInChat
+
 //import ChatService.createChat
 //import ChatService.createChatFirstMessage
 
@@ -28,6 +30,7 @@ fun main(args: Array<String>) {
 //    val mess_2 = Message(0,0, 0, "Hello mess2", false, false)
 //
 //    addChat(chat_2, 3)
+
 //    println(chats)
 //    addChat(chat_2, 2)
 
@@ -68,6 +71,7 @@ fun main(args: Array<String>) {
 ////
 //    println(isUserDeleted(1))
 //    println(isUserDeleted(2))
+//    receiveUnreadMessagesInChat()
 
 
 }

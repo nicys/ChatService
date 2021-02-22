@@ -76,7 +76,7 @@ object ChatService : ChatInterface<Chat, Message, User>{
     override fun receiveUnreadMessagesInChat() {
         for (chat in chats) {
             if (!chat.isDeleted) {
-                if (!messages.listUnreadLastMessages()) {
+                if (messages.listUnreadLastMessages()) {
                     println("В чате с id - ${chat.idChat} отсутствуют непрочитанные сообщения!")
                 }
                 println("В чате с id - ${chat.idChat} есть непрочитанные сообщения!")
