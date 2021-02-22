@@ -98,7 +98,6 @@ class UserNotFoundException(message: String) : RuntimeException("Пользов�
 class UserWasDeletedException(message: String) : RuntimeException("Пользователь был уже удален или его не существует!")
 class ChatUserIncorrectedException(message: String) : RuntimeException("Вы не можете отправить сообщение пользователю. Создайте сначала чат!")
 class MessageNotFind(message: String) : RuntimeException("Сообщение не найдено!")
-class ChatIs(message: String) : RuntimeException("Чат уже существует с другим пользователем")
 
 //    override fun createChatFirstMessage(message: Message, chat: Chat, idUser: Int): Message {
 //        if (users.isUserInUsers(idUser)) {
