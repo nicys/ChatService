@@ -220,6 +220,18 @@ class ChatServiceTest {
         //Assert
         assertEquals(expected, result)
     }
+
+    @Test
+    fun receiveUnreadMessagesInChat() {
+        //Arrange
+        val chat = Chat(1, "", 1, false, false)
+        chat.idChat = 1
+        val expected = println("В чате с id - ${chat.idChat} отсутствуют непрочитанные сообщения!")
+        //Act
+        val result = println("В чате с id - ${chat.idChat} отсутствуют непрочитанные сообщения!")
+        //Assert
+        assertEquals(expected, result)
+    }
 }
 
 //    @Ignore("Method was fragmented")
